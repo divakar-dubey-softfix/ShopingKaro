@@ -1,26 +1,30 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
-- task: SSH@0
-  inputs:
-    sshEndpoint: 'ssh'
-    runOptions: 'commands'
-    readyTimeout: '20000'
-  displayName: 'Install Node.js'
+  displayName: 'Use Node.js 18.x'
 
 - script: |
     npm install
     npm run build
-  displayName: 'npm install and build'
+  displayName: 'Install dependencies and build project'
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'ssh'  # Replace 'ssh' with the name of your service connection
+    runOptions: 'commands'
+    readyTimeout: '20000'
+    commands: |
+      # Your custom SSH commands to execute on the remote server
+      echo "Node.js project has been built and is ready for deployment."
+      # Example: navigate to the project directory and start the server
+      # cd /path/to/your/project
+      # pm2 restart all
+  displayName: 'Run remote commands via SSH'
+
